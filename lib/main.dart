@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nsocial/common/Constantcolors.dart';
+import 'package:nsocial/screens/Feed/FeedHelpers.dart';
 import 'package:nsocial/screens/HomePage/HomePageHelpers.dart';
 import 'package:nsocial/screens/Profile/ProfileHelpers.dart';
 import 'package:nsocial/screens/landingPage/landingHelpers.dart';
@@ -9,6 +10,7 @@ import 'package:nsocial/screens/landingPage/landingUtils.dart';
 import 'package:nsocial/screens/splashscreen/splashscreen.dart';
 import 'package:nsocial/services/Authentication.dart';
 import 'package:nsocial/services/FirebaseOperations.dart';
+import 'package:nsocial/utils/uploadPost.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -29,6 +31,8 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => LandingUtils(),),
       ChangeNotifierProvider(create: (_) => HomePageHelpers(),),
       ChangeNotifierProvider(create: (_) => ProfileHelpers(),),
+      ChangeNotifierProvider(create: (_) => UploadPost(),),
+      ChangeNotifierProvider(create: (_) => FeedHelpers(),),
     ],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
