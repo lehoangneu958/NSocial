@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nsocial/common/Constantcolors.dart';
 import 'package:nsocial/services/Authentication.dart';
+import 'package:nsocial/utils/PostOptions.dart';
 import 'package:provider/provider.dart';
 
 class FeedHelpers with ChangeNotifier {
@@ -114,6 +115,17 @@ class FeedHelpers with ChangeNotifier {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             GestureDetector(
+                              onLongPress: (){
+                                Provider.of<PostFunctions>(context, listen: false)
+                                .showLikes(context,
+                                documentSnapshot['caption']);
+                              },
+                              onTap: (){
+                                print('Adding Like...');
+                                Provider.of<PostFunctions>(context, listen: false).addLike(context
+                                , documentSnapshot['caption']
+                                , Provider.of<Authentication>(context, listen: false).getUserUid);
+                              },
                               child: Icon(
                                 FontAwesomeIcons.heart,
                                 color: ConstantColors.redColor,
@@ -121,13 +133,28 @@ class FeedHelpers with ChangeNotifier {
                               ),
                             ),
                             Padding(padding: EdgeInsets.only(left: 8)),
-                            Text(
-                              '0',
+                            StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance.collection('posts')
+                              .doc(documentSnapshot['caption'])
+                              .collection('likes').snapshots(),
+                              builder: (context, snapshot){
+                                if (snapshot.connectionState == ConnectionState.waiting){
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else {
+                                  return Text(
+                              snapshot.data!.docs.length.toString(),
                               style: TextStyle(
                                   color: ConstantColors.whiteColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18),
+                            );
+                                }
+                              },
                             )
+                            
+                            
                           ],
                         ),
                       ),
@@ -138,6 +165,10 @@ class FeedHelpers with ChangeNotifier {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             GestureDetector(
+                              onTap: (){
+                                Provider.of<PostFunctions>(context, listen: false).showCommentsSheet(context,
+                                 documentSnapshot, documentSnapshot['caption']);
+                              },
                               child: Icon(
                                 FontAwesomeIcons.comment,
                                 color: ConstantColors.blueColor,
@@ -145,12 +176,25 @@ class FeedHelpers with ChangeNotifier {
                               ),
                             ),
                             Padding(padding: EdgeInsets.only(left: 8)),
-                            Text(
-                              '0',
+                            StreamBuilder<QuerySnapshot>(
+                              stream: FirebaseFirestore.instance.collection('posts')
+                              .doc(documentSnapshot['caption'])
+                              .collection('comments').snapshots(),
+                              builder: (context, snapshot){
+                                if (snapshot.connectionState == ConnectionState.waiting){
+                                  return Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else {
+                                  return Text(
+                              snapshot.data!.docs.length.toString(),
                               style: TextStyle(
                                   color: ConstantColors.whiteColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18),
+                            );
+                                }
+                              },
                             )
                           ],
                         ),

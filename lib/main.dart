@@ -10,6 +10,7 @@ import 'package:nsocial/screens/landingPage/landingUtils.dart';
 import 'package:nsocial/screens/splashscreen/splashscreen.dart';
 import 'package:nsocial/services/Authentication.dart';
 import 'package:nsocial/services/FirebaseOperations.dart';
+import 'package:nsocial/utils/PostOptions.dart';
 import 'package:nsocial/utils/uploadPost.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => ProfileHelpers(),),
       ChangeNotifierProvider(create: (_) => UploadPost(),),
       ChangeNotifierProvider(create: (_) => FeedHelpers(),),
+      ChangeNotifierProvider(create: (_) => PostFunctions(),),
     ],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,
