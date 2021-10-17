@@ -291,7 +291,8 @@ class UploadPost with ChangeNotifier {
                       'useremail': Provider.of<FirebaseOperations>(context,
                               listen: false)
                           .getInitUserEmail,
-                    }).whenComplete(() => {
+                        })
+                    .whenComplete(() => {
                       Navigator.pop(context)
                     });
                   },

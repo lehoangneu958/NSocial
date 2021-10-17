@@ -1,5 +1,6 @@
 
 
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,8 @@ class Authentication with ChangeNotifier{
 
   late String userUid;
   String get getUserUid => userUid;
+
+  
 
   Future logIntoAccount(String email, String password) async{
 

@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nsocial/common/Constantcolors.dart';
+import 'package:nsocial/screens/AltProfile/alt_profile_helper.dart';
 import 'package:nsocial/screens/Feed/FeedHelpers.dart';
 import 'package:nsocial/screens/HomePage/HomePageHelpers.dart';
 import 'package:nsocial/screens/Profile/ProfileHelpers.dart';
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => UploadPost(),),
       ChangeNotifierProvider(create: (_) => FeedHelpers(),),
       ChangeNotifierProvider(create: (_) => PostFunctions(),),
+      ChangeNotifierProvider(create: (_) => AltprofileHelper(),),
     ],
     child: MaterialApp(
       debugShowCheckedModeBanner: false,

@@ -4,18 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nsocial/common/Constantcolors.dart';
+import 'package:nsocial/screens/AltProfile/alt_profile.dart';
+
 import 'package:nsocial/services/Authentication.dart';
 import 'package:nsocial/utils/PostOptions.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class FeedHelpers with ChangeNotifier {
   Widget feedBody(BuildContext context) {
     return SingleChildScrollView(
+      
       child: Padding(
         padding: const EdgeInsets.all(0),
         child: Container(
           child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+            stream: FirebaseFirestore.instance.collection('posts').orderBy('time', descending: true).snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Center(
@@ -26,8 +30,10 @@ class FeedHelpers with ChangeNotifier {
                   ),
                 );
               } else {
-               return  new ListView(
+               return  ListView(
       children: snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
+        Provider.of<PostFunctions>(context, listen: false)
+        .showTimeAgo(documentSnapshot['time']);
         return Padding(
           padding: const EdgeInsets.only(bottom:8.0),
           child: Container(
@@ -35,7 +41,7 @@ class FeedHelpers with ChangeNotifier {
               color: ConstantColors.blueColor.withOpacity(0.3),
               borderRadius: BorderRadius.circular(15)
             ),
-           height: MediaQuery.of(context).size.height,
+           height: MediaQuery.of(context).size.height*0.6,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,6 +52,13 @@ class FeedHelpers with ChangeNotifier {
                   child: Row(
                     children: [
                       GestureDetector(
+                        onTap: (){
+                          if (documentSnapshot['useruid'] != Provider.of<Authentication>(context, listen: false)
+                          .getUserUid){
+                            Navigator.pushReplacement(context, PageTransition(child: AltProfile(userUid: documentSnapshot['useruid'],),
+        type: PageTransitionType.bottomToTop));
+                          }
+                        },
                         child: CircleAvatar(
                           backgroundColor: ConstantColors.transperant,
                           radius: 30,
@@ -72,10 +85,12 @@ class FeedHelpers with ChangeNotifier {
                                               fontWeight: FontWeight.bold),
                                           ))),
                               RichText(text: TextSpan(
-                                        text: ' , 12 hours ago',
+                                        text: '${
+                                          Provider.of<PostFunctions>(context, listen: false).getimageTimeposted.toString()
+                                        }',
                                         style: TextStyle(
                                             color: ConstantColors.lightColor
-                                                .withOpacity(0.8))))
+                                                .withOpacity(1))))
                                   
                             ],
                           ),
@@ -97,7 +112,7 @@ class FeedHelpers with ChangeNotifier {
                               ),
                  ),
                 Container(
-                  color: ConstantColors.redColor,
+                  color: ConstantColors.transperant,
                   height: MediaQuery.of(context).size.height * 0.3,
                   width: MediaQuery.of(context).size.width,
                   child: FittedBox(
@@ -121,12 +136,13 @@ class FeedHelpers with ChangeNotifier {
                                 documentSnapshot['caption']);
                               },
                               onTap: (){
+
                                 print('Adding Like...');
                                 Provider.of<PostFunctions>(context, listen: false).addLike(context
                                 , documentSnapshot['caption']
                                 , Provider.of<Authentication>(context, listen: false).getUserUid);
                               },
-                              child: Icon(
+                              child:  Icon(
                                 FontAwesomeIcons.heart,
                                 color: ConstantColors.redColor,
                                 size: 22,
@@ -227,7 +243,9 @@ class FeedHelpers with ChangeNotifier {
                   Provider.of<Authentication>(context, listen: false).getUserUid ==
                           documentSnapshot['useruid']
                       ? IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Provider.of<PostFunctions>(context, listen: false).showPostOptions(context, documentSnapshot['caption']);
+                          },
                           icon: Icon(
                             EvaIcons.moreVertical,
                             color: ConstantColors.whiteColor,
@@ -245,6 +263,7 @@ class FeedHelpers with ChangeNotifier {
           ),
         );
       }).toList(),
+      
     );
               }
               
