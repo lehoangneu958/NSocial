@@ -10,7 +10,7 @@ class Feed extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      resizeToAvoidBottomInset: false,
       drawer: Drawer(),
       appBar: AppBar(
         backgroundColor: ConstantColors.darkColor.withOpacity(0.4),
@@ -18,7 +18,8 @@ class Feed extends StatelessWidget {
         actions: [
           IconButton(
               onPressed: () {
-                Provider.of<UploadPost>(context, listen: false).selectPostImageType(context);
+                Provider.of<UploadPost>(context, listen: false)
+                    .selectPostImageType(context);
               },
               icon: Icon(
                 Icons.camera_enhance_rounded,

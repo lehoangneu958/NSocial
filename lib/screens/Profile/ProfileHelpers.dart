@@ -245,7 +245,7 @@ class ProfileHelpers with ChangeNotifier {
                               padding: const EdgeInsets.only(left: 8),
                               child: GestureDetector(
                                 onTap: (){
-                                  Navigator.pushReplacement(context, PageTransition(
+                                  Navigator.push(context, PageTransition(
                                   child: AltProfile(userUid:documentSnapshot['useruid']), type: PageTransitionType.topToBottom
                                 ));
                                 },

@@ -15,19 +15,18 @@ class PostFunctions with ChangeNotifier {
   late String imageTimePosted;
   String get getimageTimeposted => imageTimePosted;
 
-  bool checkLike( BuildContext context,String postId) {
-    
-    dynamic data =  FirebaseFirestore.instance
-                        .collection('posts')
-                        .doc(postId)
-                        .collection('likes')
-                        .snapshots();
-    
-    if (data['useruid'] == Provider.of<Authentication>(context, listen: false).getUserUid){
+  bool checkLike(BuildContext context, String postId) {
+    dynamic data = FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('likes')
+        .snapshots();
+
+    if (data['useruid'] ==
+        Provider.of<Authentication>(context, listen: false).getUserUid) {
       return true;
     }
     return false;
-      
   }
 
   showTimeAgo(dynamic timedata) {
@@ -40,11 +39,12 @@ class PostFunctions with ChangeNotifier {
 
   showPostOptions(BuildContext context, String postId) {
     return showModalBottomSheet(
-      isScrollControlled: true,
+        isScrollControlled: true,
         context: context,
         builder: (context) {
           return Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Container(
               child: Column(
                 children: [
@@ -61,48 +61,55 @@ class PostFunctions with ChangeNotifier {
                       children: [
                         MaterialButton(
                           onPressed: () {
-                            showModalBottomSheet(context: context, builder: (context){
-                              return Container(
-                                child: Center(
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 300,
-                                        height: 50,
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            hintText: 'Add New Caption',
-                                            hintStyle: TextStyle(
-                                              color: ConstantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
+                            showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Container(
+                                    child: Center(
+                                      child: Row(
+                                        children: [
+                                          Container(
+                                            width: 300,
+                                            height: 50,
+                                            child: TextField(
+                                              decoration: InputDecoration(
+                                                hintText: 'Add New Caption',
+                                                hintStyle: TextStyle(
+                                                    color: ConstantColors
+                                                        .whiteColor,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 16),
+                                              ),
+                                              style: TextStyle(
+                                                  color:
+                                                      ConstantColors.whiteColor,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16),
+                                              controller: editCaptionController,
                                             ),
                                           ),
-                                          style: TextStyle(
+                                          FloatingActionButton(
+                                            onPressed: () {
+                                              Provider.of<FirebaseOperations>(
+                                                      context,
+                                                      listen: false)
+                                                  .updateCation(postId, {
+                                                'caption':
+                                                    editCaptionController.text
+                                              });
+                                            },
+                                            child: Icon(
+                                              FontAwesomeIcons.fileUpload,
                                               color: ConstantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16
                                             ),
-                                            controller: editCaptionController,
-
-                                        ),
+                                            backgroundColor:
+                                                ConstantColors.redColor,
+                                          )
+                                        ],
                                       ),
-                                      FloatingActionButton(onPressed: (){
-                                        Provider.of<FirebaseOperations>(context, listen: false)
-                                        .updateCation(postId, {
-                                          'caption': editCaptionController.text
-                                        });
-                                      },
-                                      child: Icon(FontAwesomeIcons.fileUpload,
-                                      color: ConstantColors.whiteColor,
-                                      
-                                      ),
-                                      backgroundColor: ConstantColors.redColor,)
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
+                                    ),
+                                  );
+                                });
                           },
                           color: ConstantColors.blueColor,
                           child: Text(
@@ -133,12 +140,13 @@ class PostFunctions with ChangeNotifier {
                                         onPressed: () {
                                           Navigator.pop(context);
                                         },
-                                      
                                         child: Text(
                                           'No',
                                           style: TextStyle(
-                                            decoration: TextDecoration.underline,
-                                            decorationColor: ConstantColors.whiteColor,
+                                              decoration:
+                                                  TextDecoration.underline,
+                                              decorationColor:
+                                                  ConstantColors.whiteColor,
                                               color: ConstantColors.whiteColor,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16),
@@ -146,9 +154,11 @@ class PostFunctions with ChangeNotifier {
                                       ),
                                       MaterialButton(
                                         onPressed: () {
-                                          Provider.of<FirebaseOperations>(context, listen: false)
-                                          .deleteUserPost(postId, 'posts')
-                                          .whenComplete((){
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .deleteUserPost(postId, 'posts')
+                                              .whenComplete(() {
                                             Navigator.pop(context);
                                           });
                                         },
@@ -231,243 +241,192 @@ class PostFunctions with ChangeNotifier {
 
   showCommentsSheet(
       BuildContext context, DocumentSnapshot snapshot, String docId) {
-    return showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: Container(
-              height: MediaQuery.of(context).size.height * 0.75,
+    return Container(
+        child: Padding(
+      padding: EdgeInsets.only(bottom: 0),
+      child: Container(
+        // height: MediaQuery.of(context).size.height * 0.7,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 150),
+              child: Divider(
+                thickness: 4,
+                color: ConstantColors.whiteColor,
+              ),
+            ),
+            // Container(
+            //   decoration: BoxDecoration(
+            //       border: Border.all(color: ConstantColors.whiteColor),
+            //       borderRadius: BorderRadius.circular(5)),
+            //   child: Center(
+            //     child: Text(
+            //       'Comments',
+            //       style: TextStyle(
+            //           color: ConstantColors.blueColor,
+            //           fontSize: 16,
+            //           fontWeight: FontWeight.bold),
+            //     ),
+            //   ),
+            // ),
+            Container(
               width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 150),
-                    child: Divider(
-                      thickness: 4,
-                      color: ConstantColors.whiteColor,
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: ConstantColors.whiteColor),
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Center(
-                      child: Text(
-                        'Comments',
-                        style: TextStyle(
-                            color: ConstantColors.blueColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.55,
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('posts')
-                          .doc(docId)
-                          .collection('comments')
-                          .orderBy('time')
-                          .snapshots(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else {
-                          return new ListView(
-                            children: snapshot.data!.docs
-                                .map((DocumentSnapshot documentSnapshot) {
-                              return Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.15,
-                                width: MediaQuery.of(context).size.width,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 8, left: 8),
-                                          child: GestureDetector(
-                                            onTap: (){
-                                              if (documentSnapshot['useruid'] != Provider.of<Authentication>(context, listen: false)
-                          .getUserUid){
-                            Navigator.pushReplacement(context, PageTransition(child: AltProfile(userUid: documentSnapshot['useruid'],),
-        type: PageTransitionType.bottomToTop));
-                          }
-                                            },
-                                            child: CircleAvatar(
-                                              backgroundColor:
-                                                  ConstantColors.darkColor,
-                                              radius: 15,
-                                              backgroundImage: NetworkImage(
-                                                  documentSnapshot[
-                                                      'userimage']),
-                                            ),
-                                          ),
-                                        ),
-                                        Column(
-                                          children: [
-                                            Container(
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    documentSnapshot[
-                                                        'username'],
-                                                    style: TextStyle(
-                                                        color: ConstantColors
-                                                            .whiteColor,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 14),
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                        Container(
-                                          child: Row(
-                                            children: [
-                                              IconButton(
-                                                  onPressed: () {},
-                                                  icon: Icon(
-                                                    FontAwesomeIcons.arrowUp,
-                                                    color: ConstantColors
-                                                        .blueColor,
-                                                    size: 14,
-                                                  )),
-                                              Text(
-                                                '0',
-                                                style: TextStyle(
-                                                    color: ConstantColors
-                                                        .whiteColor,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 14),
-                                              ),
-                                              IconButton(
-                                                  onPressed: () {},
-                                                  icon: Icon(
-                                                    FontAwesomeIcons.reply,
-                                                    color: ConstantColors
-                                                        .yellowColor,
-                                                    size: 14,
-                                                  )),
-                                            ],
-                                          ),
-                                        )
-                                      ],
+              height: MediaQuery.of(context).size.height * 0.35,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('posts')
+                    .doc(docId)
+                    .collection('comments')
+                    .orderBy('time')
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    return new ListView(
+                      physics: AlwaysScrollableScrollPhysics(),
+                      children: snapshot.data!.docs
+                          .map((DocumentSnapshot documentSnapshot) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          width: MediaQuery.of(context).size.width,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding:
+                                        const EdgeInsets.only(top: 8, left: 8),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        if (documentSnapshot['useruid'] !=
+                                            Provider.of<Authentication>(context,
+                                                    listen: false)
+                                                .getUserUid) {
+                                          Navigator.push(
+                                              context,
+                                              PageTransition(
+                                                  child: AltProfile(
+                                                    userUid: documentSnapshot[
+                                                        'useruid'],
+                                                  ),
+                                                  type: PageTransitionType
+                                                      .bottomToTop));
+                                        }
+                                      },
+                                      child: CircleAvatar(
+                                        backgroundColor:
+                                            ConstantColors.darkColor,
+                                        radius: 15,
+                                        backgroundImage: NetworkImage(
+                                            documentSnapshot['userimage']),
+                                      ),
                                     ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(
-                                                Icons
-                                                    .arrow_forward_ios_outlined,
-                                                color: ConstantColors.blueColor,
-                                                size: 12,
-                                              )),
-                                          Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.75,
-                                            child: Text(
-                                              documentSnapshot['comment'],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Container(
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              documentSnapshot['username'],
                                               style: TextStyle(
                                                   color:
                                                       ConstantColors.whiteColor,
+                                                  fontWeight: FontWeight.bold,
                                                   fontSize: 14),
-                                            ),
-                                          ),
-                                          IconButton(
-                                              onPressed: () {},
-                                              icon: Icon(
-                                                FontAwesomeIcons.trashAlt,
-                                                color: ConstantColors.redColor,
-                                                size: 14,
-                                              )),
-                                        ],
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                  Container(
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              FontAwesomeIcons.arrowUp,
+                                              color: ConstantColors.blueColor,
+                                              size: 14,
+                                            )),
+                                        Text(
+                                          '0',
+                                          style: TextStyle(
+                                              color: ConstantColors.whiteColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14),
+                                        ),
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              FontAwesomeIcons.reply,
+                                              color: ConstantColors.yellowColor,
+                                              size: 14,
+                                            )),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          Icons.arrow_forward_ios_outlined,
+                                          color: ConstantColors.blueColor,
+                                          size: 12,
+                                        )),
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.7,
+                                      child: Text(
+                                        documentSnapshot['comment'],
+                                        style: TextStyle(
+                                            color: ConstantColors.whiteColor,
+                                            fontSize: 14),
                                       ),
                                     ),
-                                    // Divider(
-                                    //   color: ConstantColors.darkColor.withOpacity(0.2),
-                                    // )
+                                    IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          FontAwesomeIcons.trashAlt,
+                                          color: ConstantColors.redColor,
+                                          size: 14,
+                                        )),
                                   ],
                                 ),
-                              );
-                            }).toList(),
-                          );
-                        }
-                      },
-                    ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height * 0.08,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          height: MediaQuery.of(context).size.height * 0.1,
-                          child: TextField(
-                            textCapitalization: TextCapitalization.sentences,
-                            decoration: InputDecoration(
-                                hintText: 'Add Comment...',
-                                hintStyle: TextStyle(
-                                    color: ConstantColors.whiteColor,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold)),
-                            controller: commentController,
-                            style: TextStyle(
-                                color: ConstantColors.whiteColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
+                              ),
+                              // Divider(
+                              //   color: ConstantColors.darkColor.withOpacity(0.2),
+                              // )
+                            ],
                           ),
-                        ),
-                        FloatingActionButton(
-                          onPressed: () {
-                            print('Adding Comment...');
-                            addComment(context, snapshot['caption'],
-                                    commentController.text)
-                                .whenComplete(() {
-                              commentController.clear();
-                              notifyListeners();
-                            });
-                          },
-                          child: Icon(
-                            FontAwesomeIcons.paperPlane,
-                            color: ConstantColors.whiteColor,
-                          ),
-                        )
-                      ],
-                    ),
-                  )
-                ],
+                        );
+                      }).toList(),
+                    );
+                  }
+                },
               ),
-              decoration: BoxDecoration(
-                  color: ConstantColors.blueGreyColor,
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(12),
-                      topRight: Radius.circular(12))),
             ),
-          );
-        });
+          ],
+        ),
+        decoration: BoxDecoration(
+            color: ConstantColors.blueGreyColor,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(0), topRight: Radius.circular(0))),
+      ),
+    ));
   }
 
   showLikes(BuildContext context, String postId) {
@@ -518,12 +477,21 @@ class PostFunctions with ChangeNotifier {
                               .map((DocumentSnapshot documentSnapshot) {
                             return ListTile(
                               leading: GestureDetector(
-                                onTap: (){
-                                  if (documentSnapshot['useruid'] != Provider.of<Authentication>(context, listen: false)
-                          .getUserUid){
-                            Navigator.pushReplacement(context, PageTransition(child: AltProfile(userUid: documentSnapshot['useruid'],),
-        type: PageTransitionType.bottomToTop));
-                          }
+                                onTap: () {
+                                  if (documentSnapshot['useruid'] !=
+                                      Provider.of<Authentication>(context,
+                                              listen: false)
+                                          .getUserUid) {
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            child: AltProfile(
+                                              userUid:
+                                                  documentSnapshot['useruid'],
+                                            ),
+                                            type: PageTransitionType
+                                                .bottomToTop));
+                                  }
                                 },
                                 child: CircleAvatar(
                                   backgroundImage: NetworkImage(

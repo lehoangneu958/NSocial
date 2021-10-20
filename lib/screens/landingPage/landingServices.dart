@@ -201,16 +201,11 @@ class LandingServices with ChangeNotifier {
                             if (UserEmailController.text.isNotEmpty) {
                               Provider.of<Authentication>(context,
                                       listen: false)
-                                  .logIntoAccount(UserEmailController.text,
+                                  .logIntoAccount(
+                                      context,
+                                      UserEmailController.text,
                                       UserPasswordController.text)
-                                  .whenComplete(() => {
-                                        Navigator.pushReplacement(
-                                            context,
-                                            PageTransition(
-                                                child: HomePage(),
-                                                type: PageTransitionType
-                                                    .bottomToTop))
-                                      });
+                                  .whenComplete(() => {});
                             } else {
                               warningText(context, 'Fill all the data!');
                             }
@@ -323,11 +318,12 @@ class LandingServices with ChangeNotifier {
                                   .createAccount(UserEmailController.text,
                                       UserPasswordController.text)
                                   .whenComplete(() => {
-                                    print('Creating collection'),
+                                        print('Creating collection'),
                                         Provider.of<FirebaseOperations>(context,
                                                 listen: false)
                                             .createUserCollection(context, {
-                                          'userpassword': UserPasswordController.text,
+                                          'userpassword':
+                                              UserPasswordController.text,
                                           'useruid':
                                               Provider.of<Authentication>(
                                                       context,

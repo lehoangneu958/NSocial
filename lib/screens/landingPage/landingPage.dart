@@ -7,14 +7,19 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: ConstantColors.whiteColor,
       body: Stack(
         children: [
           bodyColor(),
-          Provider.of<LandingHelpers>(context, listen: false).bodyImage(context),
-          Provider.of<LandingHelpers>(context, listen: false).taglineText(context),
-          Provider.of<LandingHelpers>(context, listen: false).mainButton(context),
-          Provider.of<LandingHelpers>(context, listen: false).privacyText(context),
+          Provider.of<LandingHelpers>(context, listen: false)
+              .bodyImage(context),
+          Provider.of<LandingHelpers>(context, listen: false)
+              .taglineText(context),
+          Provider.of<LandingHelpers>(context, listen: false)
+              .mainButton(context),
+          Provider.of<LandingHelpers>(context, listen: false)
+              .privacyText(context),
         ],
       ),
     );
@@ -26,8 +31,14 @@ class LandingPage extends StatelessWidget {
           gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              stops: [0.5, 0.9],
-              colors: [ConstantColors.darkColor, ConstantColors.blueGreyColor])),
+              stops: [
+            0.5,
+            0.9
+          ],
+              colors: [
+            ConstantColors.darkColor,
+            ConstantColors.blueGreyColor
+          ])),
     );
   }
 }
