@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:nsocial/screens/landingPage/landingUtils.dart';
@@ -98,4 +99,12 @@ class FirebaseOperations with ChangeNotifier {
           .set(followerData);
     });
   }
+
+  Future submitChatroomData(String chatroomName, dynamic data) async{
+    return FirebaseFirestore.instance.collection('chatrooms').doc(
+      chatroomName
+    ).set(data);
+
+  }
+
 }
