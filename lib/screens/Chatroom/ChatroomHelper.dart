@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nsocial/common/Constantcolors.dart';
+import 'package:nsocial/screens/AltProfile/alt_profile.dart';
 import 'package:nsocial/screens/Messaging/GroupMessage.dart';
 import 'package:nsocial/services/Authentication.dart';
 import 'package:nsocial/services/FirebaseOperations.dart';
@@ -50,6 +52,52 @@ class ChatroomHelper with ChangeNotifier {
                   ),
                 ),
                 Container(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('chatrooms')
+                        .doc(documentSnapshot.id)
+                        .collection('members')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        return new ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: snapshot.data!.docs
+                                .map((DocumentSnapshot documentSnapshot) {
+                              return GestureDetector(
+                                onTap: () {
+                                  if (Provider.of<Authentication>(context,
+                                              listen: false)
+                                          .getUserUid !=
+                                      documentSnapshot.id) {
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                            child: AltProfile(
+                                                userUid: documentSnapshot.id
+                                                    ),
+                                            type: PageTransitionType
+                                                .bottomToTop));
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left :8.0),
+                                  child: CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor: ConstantColors.darkColor,
+                                    backgroundImage: NetworkImage(
+                                        documentSnapshot['userimage']),
+                                  ),
+                                ),
+                              );
+                            }).toList());
+                      }
+                    },
+                  ),
                   color: ConstantColors.transperant,
                   height: MediaQuery.of(context).size.height * 0.08,
                   width: MediaQuery.of(context).size.width,
@@ -79,7 +127,7 @@ class ChatroomHelper with ChangeNotifier {
                             NetworkImage(documentSnapshot['userimage']),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left:8.0),
+                        padding: const EdgeInsets.only(left: 8.0),
                         child: Text(documentSnapshot['username'],
                             style: TextStyle(
                                 color: ConstantColors.whiteColor,
@@ -209,6 +257,62 @@ class ChatroomHelper with ChangeNotifier {
                                     listen: false)
                                 .getUserUid,
                           }).whenComplete(() {
+                            Provider.of<FirebaseOperations>(context,
+                                    listen: false)
+                                .submitUserChatRoom(
+                                    chatroomNameController.text,
+                                    {
+                                      'roomavatar': '',
+                                      'time': Timestamp.now(),
+                                      'roomname': chatroomNameController.text,
+                                      'username':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserName,
+                                      'useremail':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserEmail,
+                                      'userimage':
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .getInitUserImage,
+                                      'useruid': Provider.of<Authentication>(
+                                              context,
+                                              listen: false)
+                                          .getUserUid,
+                                    },
+                                    Provider.of<Authentication>(context,
+                                            listen: false)
+                                        .getUserUid);
+                          }).whenComplete(() {
+                            FirebaseFirestore.instance
+                                .collection('chatrooms')
+                                .doc(chatroomNameController.text)
+                                .collection('members')
+                                .doc(Provider.of<Authentication>(context,
+                                        listen: false)
+                                    .getUserUid)
+                                .set({
+                              'joined': true,
+                              'username': Provider.of<FirebaseOperations>(
+                                      context,
+                                      listen: false)
+                                  .getInitUserName,
+                              'useremail': Provider.of<FirebaseOperations>(
+                                      context,
+                                      listen: false)
+                                  .getInitUserEmail,
+                              'userimage': Provider.of<FirebaseOperations>(
+                                      context,
+                                      listen: false)
+                                  .getInitUserImage,
+                              'time': Timestamp.now()
+                            });
+                          }).whenComplete(() {
                             Navigator.pop(context);
                           });
                         },
@@ -229,7 +333,9 @@ class ChatroomHelper with ChangeNotifier {
 
   showChatrooms(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('chatrooms').snapshots(),
+      stream: FirebaseFirestore.instance.collection('users')
+      .doc(Provider.of<Authentication>(context,listen: false).getUserUid)
+      .collection('chatrooms').snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
@@ -240,12 +346,15 @@ class ChatroomHelper with ChangeNotifier {
             children:
                 snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
               return ListTile(
-                onTap: (){
-                  Navigator.push(context, PageTransition(
-                    child: GroupMessage(documentSnapshot: documentSnapshot), type: PageTransitionType.leftToRight
-                  ));
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      PageTransition(
+                          child:
+                              GroupMessage(documentSnapshot: documentSnapshot),
+                          type: PageTransitionType.leftToRight));
                 },
-                onLongPress: (){
+                onLongPress: () {
                   showChatroomDetails(context, documentSnapshot);
                 },
                 title: Text(

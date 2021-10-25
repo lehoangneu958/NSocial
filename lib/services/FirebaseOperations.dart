@@ -101,9 +101,13 @@ class FirebaseOperations with ChangeNotifier {
   }
 
   Future submitChatroomData(String chatroomName, dynamic data) async{
-    return FirebaseFirestore.instance.collection('chatrooms').doc(
-      chatroomName
-    ).set(data);
+    return FirebaseFirestore.instance.collection('chatrooms').doc(chatroomName).set(data);
+
+  }
+
+  Future submitUserChatRoom(String chatroomName, dynamic data, String useruid) async{
+    return FirebaseFirestore.instance.collection('users').doc(useruid).collection('chatrooms')
+    .doc(chatroomName).set(data);
 
   }
 
