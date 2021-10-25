@@ -2,14 +2,99 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nsocial/common/Constantcolors.dart';
+import 'package:nsocial/screens/Messaging/GroupMessage.dart';
 import 'package:nsocial/services/Authentication.dart';
 import 'package:nsocial/services/FirebaseOperations.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class ChatroomHelper with ChangeNotifier {
   late String chatroomAvatarUrl, chatroomID;
   String get getChatroomID => chatroomID;
   final TextEditingController chatroomNameController = TextEditingController();
+
+  showChatroomDetails(BuildContext context, DocumentSnapshot documentSnapshot) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.27,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: ConstantColors.blueGreyColor,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12))),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: ConstantColors.whiteColor,
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: ConstantColors.blueColor),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      'Members',
+                      style: TextStyle(
+                          color: ConstantColors.whiteColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Container(
+                  color: ConstantColors.transperant,
+                  height: MediaQuery.of(context).size.height * 0.08,
+                  width: MediaQuery.of(context).size.width,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: ConstantColors.yellowColor),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Text(
+                      'Admin',
+                      style: TextStyle(
+                          color: ConstantColors.whiteColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: ConstantColors.transperant,
+                        backgroundImage:
+                            NetworkImage(documentSnapshot['userimage']),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left:8.0),
+                        child: Text(documentSnapshot['username'],
+                            style: TextStyle(
+                                color: ConstantColors.whiteColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
   showCreateChatroomSheet(BuildContext context) {
     return showModalBottomSheet(
         context: context,
@@ -103,24 +188,29 @@ class ChatroomHelper with ChangeNotifier {
                       ),
                       FloatingActionButton(
                         onPressed: () async {
-                            Provider.of<FirebaseOperations>(context, listen: false)
-                            .submitChatroomData(chatroomNameController.text
-                            , {
-                                'roomavatar': '',
-                                'time': Timestamp.now(),
-                                'roomname': chatroomNameController.text,
-                                'username': Provider.of<FirebaseOperations>(context, listen: false)
+                          Provider.of<FirebaseOperations>(context,
+                                  listen: false)
+                              .submitChatroomData(chatroomNameController.text, {
+                            'roomavatar': '',
+                            'time': Timestamp.now(),
+                            'roomname': chatroomNameController.text,
+                            'username': Provider.of<FirebaseOperations>(context,
+                                    listen: false)
                                 .getInitUserName,
-                                'useremail': Provider.of<FirebaseOperations>(context, listen: false)
+                            'useremail': Provider.of<FirebaseOperations>(
+                                    context,
+                                    listen: false)
                                 .getInitUserEmail,
-                                'userimage': Provider.of<FirebaseOperations>(context, listen: false)
+                            'userimage': Provider.of<FirebaseOperations>(
+                                    context,
+                                    listen: false)
                                 .getInitUserImage,
-                                'useruid': Provider.of<Authentication>(context, listen: false)
+                            'useruid': Provider.of<Authentication>(context,
+                                    listen: false)
                                 .getUserUid,
-                            }).whenComplete(() {
-                              Navigator.pop(context);
-                            });
-
+                          }).whenComplete(() {
+                            Navigator.pop(context);
+                          });
                         },
                         backgroundColor: ConstantColors.blueGreyColor,
                         child: Icon(
@@ -137,41 +227,51 @@ class ChatroomHelper with ChangeNotifier {
         });
   }
 
-  showChatrooms(BuildContext context){
+  showChatrooms(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance.collection('chatrooms').snapshots(),
-      builder: (context, snapshot){
-        if (snapshot.connectionState == ConnectionState.waiting){
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: CircularProgressIndicator(),
           );
-        }
-        else{
+        } else {
           return new ListView(
-            children: snapshot.data!.docs.map((DocumentSnapshot documentSnapshot){
+            children:
+                snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
               return ListTile(
-                title: Text(documentSnapshot['roomname'],
-                style: TextStyle(
-                  color: ConstantColors.whiteColor,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold
-                ),),
-                subtitle: Text('Last Message',
-                style: TextStyle(
-                  color: ConstantColors.greenColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold
-                ),),
-                trailing: Text('2 hours ago', style: TextStyle(
-                  color: ConstantColors.greenColor,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold
-                ),),
+                onTap: (){
+                  Navigator.push(context, PageTransition(
+                    child: GroupMessage(documentSnapshot: documentSnapshot), type: PageTransitionType.leftToRight
+                  ));
+                },
+                onLongPress: (){
+                  showChatroomDetails(context, documentSnapshot);
+                },
+                title: Text(
+                  documentSnapshot['roomname'],
+                  style: TextStyle(
+                      color: ConstantColors.whiteColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  'Last Message',
+                  style: TextStyle(
+                      color: ConstantColors.greenColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
+                trailing: Text(
+                  '2 hours ago',
+                  style: TextStyle(
+                      color: ConstantColors.greenColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold),
+                ),
                 leading: CircleAvatar(
                   backgroundColor: ConstantColors.transperant,
-                  backgroundImage: NetworkImage(
-                    documentSnapshot['roomavatar']
-                  ),
+                  backgroundImage: NetworkImage(documentSnapshot['roomavatar']),
                 ),
               );
             }).toList(),
