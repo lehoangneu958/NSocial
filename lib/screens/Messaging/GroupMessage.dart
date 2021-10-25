@@ -43,9 +43,9 @@ class _GroupMessageState extends State<GroupMessage> {
   Widget build(BuildContext context) {
     return Scaffold(
       endDrawer:
-       NavigationDrawerMessageWidget(AdminUid:
+       NavigationDrawerMessageWidget(userUid:
         Provider.of<Authentication>(context, listen: false).getUserUid
-        ,userUid: widget.documentSnapshot['useruid'], documentSnapshot: widget.documentSnapshot,),
+        ,AdminUid: widget.documentSnapshot['useruid'], documentSnapshot: widget.documentSnapshot,),
      
       appBar: AppBar(
         
@@ -119,6 +119,10 @@ class _GroupMessageState extends State<GroupMessage> {
                   child: Row(
                     children: [
                       GestureDetector(
+                        onTap: (){
+                          Provider.of<GroupMessageHelper>(context, listen: false)
+                          .showSticker(context, widget.documentSnapshot.id);
+                        },
                         child: CircleAvatar(
                           radius: 18,
                           backgroundColor: ConstantColors.transperant,
@@ -151,6 +155,7 @@ class _GroupMessageState extends State<GroupMessage> {
                         if (messageController.text.isNotEmpty){
                           Provider.of<GroupMessageHelper>(context, listen: false)
                           .sendMessage(context, widget.documentSnapshot, messageController);
+                          
                         }
                       },
                       backgroundColor: ConstantColors.blueColor,

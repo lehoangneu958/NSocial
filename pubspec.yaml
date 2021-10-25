@@ -57,6 +57,7 @@ flutter:
     - assets/images/empty.png
     - assets/icons/sunflower.png
     - assets/animations/
+    - assets/icons/sticker_19.png
   fonts:
     - family: Poppins
       fonts:

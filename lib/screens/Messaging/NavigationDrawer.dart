@@ -27,7 +27,19 @@ class NavigationDrawerMessageWidget extends StatelessWidget {
                 onClicked: () => SelectedItem(context, 0)
               ): Container(width: 0,height: 0,),
               buildMenuItem(text: 'Out Group', icon:  EvaIcons.logInOutline,
-              onClicked: () => SelectedItem(context, 1))
+              onClicked: () => SelectedItem(context, 1)),
+              AdminUid == userUid ?
+              buildMenuItem(
+                text: 'Delete Room',
+                icon: FontAwesomeIcons.trash,
+                onClicked: () => SelectedItem(context, 2))
+                : Container(width: 0,height: 0,),
+              AdminUid == userUid ?
+              buildMenuItem(
+                text: 'Ceding the administrator',
+                icon: FontAwesomeIcons.userCog,
+                onClicked: () => SelectedItem(context, 3))
+                : Container(width: 0,height: 0,),
             ],
           ),
         ),
@@ -53,7 +65,22 @@ class NavigationDrawerMessageWidget extends StatelessWidget {
         .addMembers(context, documentSnapshot['roomname'] );
         break;
       case 1:
-
+        AdminUid != userUid?
+        Provider.of<GroupMessageHelper>(context, listen: false)
+        .leaveTheRoomChat(context, documentSnapshot['roomname'])
+        : AlertDialog(
+          backgroundColor: ConstantColors.darkColor,
+          title: Text('Admin can\'t leave the group!!!'),
+          actions: [],
+        );
+        break;
+      case 2:
+        Provider.of<GroupMessageHelper>(context,listen: false)
+        .deleteTheRoomChat(context, documentSnapshot['roomname']);
+        break;
+      case 3:
+        Provider.of<GroupMessageHelper>(context, listen: false)
+        .cedingAdmin(context, documentSnapshot['roomname']);
         break;
     }
   }
