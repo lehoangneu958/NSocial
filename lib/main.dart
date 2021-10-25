@@ -2,8 +2,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:nsocial/common/Constantcolors.dart';
 import 'package:nsocial/screens/AltProfile/alt_profile_helper.dart';
+import 'package:nsocial/screens/Chatroom/ChatroomHelper.dart';
 import 'package:nsocial/screens/Feed/FeedHelpers.dart';
 import 'package:nsocial/screens/HomePage/HomePageHelpers.dart';
+import 'package:nsocial/screens/Messaging/GroupMessageHelper.dart';
 import 'package:nsocial/screens/Profile/ProfileHelpers.dart';
 import 'package:nsocial/screens/landingPage/landingHelpers.dart';
 import 'package:nsocial/screens/landingPage/landingServices.dart';
@@ -26,6 +28,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => GroupMessageHelper(),),
+      ChangeNotifierProvider(create: (_) => ChatroomHelper(),),
       ChangeNotifierProvider(create: (_) => LandingHelpers(),),
       ChangeNotifierProvider(create: (_) => Authentication(),),
       ChangeNotifierProvider(create: (_) => LandingServices(),),
