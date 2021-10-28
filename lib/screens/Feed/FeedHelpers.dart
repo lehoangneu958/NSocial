@@ -44,7 +44,7 @@ class FeedHelpers with ChangeNotifier {
                         decoration: BoxDecoration(
                             color: ConstantColors.blueColor.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(15)),
-                        height: MediaQuery.of(context).size.height * 0.6,
+                        // height: MediaQuery.of(context).size.height,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,16 +125,22 @@ class FeedHelpers with ChangeNotifier {
                                 ),
                               ),
                             ),
-                            Container(
-                              color: ConstantColors.transperant,
-                              height: MediaQuery.of(context).size.height * 0.3,
-                              width: MediaQuery.of(context).size.width,
-                              child: FittedBox(
-                                child: Image.network(
-                                    documentSnapshot['postimage'],
-                                    scale: 2),
-                              ),
-                            ),
+                            documentSnapshot['postimage'] != ''
+                                ? Container(
+                                    color: ConstantColors.transperant,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.3,
+                                    width: MediaQuery.of(context).size.width,
+                                    child: FittedBox(
+                                      child: Image.network(
+                                          documentSnapshot['postimage'],
+                                          scale: 2),
+                                    ),
+                                  )
+                                : Container(
+                                    width: 0,
+                                    height: 0,
+                                  ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
@@ -150,28 +156,52 @@ class FeedHelpers with ChangeNotifier {
                                           onLongPress: () {
                                             Provider.of<PostFunctions>(context,
                                                     listen: false)
-                                                .showLikes(
-                                                    context,
-                                                    documentSnapshot[
-                                                        'caption']);
+                                                .showLikes(context,
+                                                    documentSnapshot.id);
                                           },
                                           onTap: () {
-                                            print('Adding Like...');
-                                            Provider.of<PostFunctions>(context,
-                                                    listen: false)
-                                                .addLike(
-                                                    context,
-                                                    documentSnapshot['caption'],
-                                                    Provider.of<Authentication>(
-                                                            context,
-                                                            listen: false)
-                                                        .getUserUid);
+                                            // ignore: unrelated_type_equality_checks
+                                            if (Provider.of<PostFunctions>(
+                                                        context,
+                                                        listen: false)
+                                                    .checkLike(context,
+                                                        documentSnapshot.id) ==
+                                                true) {
+                                            } else {
+                                              print('Adding Like...');
+                                              Provider.of<PostFunctions>(
+                                                      context,
+                                                      listen: false)
+                                                  .addLike(
+                                                      context,
+                                                      documentSnapshot.id,
+                                                      Provider.of<Authentication>(
+                                                              context,
+                                                              listen: false)
+                                                          .getUserUid);
+                                            }
                                           },
-                                          child: Icon(
-                                            FontAwesomeIcons.heart,
-                                            color: ConstantColors.redColor,
-                                            size: 22,
-                                          ),
+                                          // ignore: unrelated_type_equality_checks
+                                          child: Provider.of<PostFunctions>(
+                                                          context,
+                                                          listen: false)
+                                                      .checkLike(
+                                                          context,
+                                                          documentSnapshot
+                                                              .id) ==
+                                                  true
+                                              ? Icon(
+                                                  FontAwesomeIcons.solidHeart,
+                                                  color:
+                                                      ConstantColors.redColor,
+                                                  size: 22,
+                                                )
+                                              : Icon(
+                                                  FontAwesomeIcons.heart,
+                                                  color:
+                                                      ConstantColors.redColor,
+                                                  size: 22,
+                                                ),
                                         ),
                                         Padding(
                                             padding: EdgeInsets.only(left: 8)),
@@ -217,9 +247,8 @@ class FeedHelpers with ChangeNotifier {
                                                 context,
                                                 PageTransition(
                                                     child: Comment(
-                                                        postId:
-                                                            documentSnapshot[
-                                                                'caption']),
+                                                        postId: documentSnapshot
+                                                            .id),
                                                     type: PageTransitionType
                                                         .rightToLeft));
                                           },
@@ -261,31 +290,31 @@ class FeedHelpers with ChangeNotifier {
                                     ),
                                   ),
                                   //--------award
-                                  Container(
-                                    width: 80,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        GestureDetector(
-                                          child: Icon(
-                                            FontAwesomeIcons.award,
-                                            color: ConstantColors.yellowColor,
-                                            size: 22,
-                                          ),
-                                        ),
-                                        Padding(
-                                            padding: EdgeInsets.only(left: 8)),
-                                        Text(
-                                          '0',
-                                          style: TextStyle(
-                                              color: ConstantColors.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18),
-                                        )
-                                      ],
-                                    ),
-                                  ),
+                                  // Container(
+                                  //   width: 80,
+                                  //   child: Row(
+                                  //     mainAxisAlignment:
+                                  //         MainAxisAlignment.start,
+                                  //     children: [
+                                  //       GestureDetector(
+                                  //         child: Icon(
+                                  //           FontAwesomeIcons.award,
+                                  //           color: ConstantColors.yellowColor,
+                                  //           size: 22,
+                                  //         ),
+                                  //       ),
+                                  //       Padding(
+                                  //           padding: EdgeInsets.only(left: 8)),
+                                  //       Text(
+                                  //         '0',
+                                  //         style: TextStyle(
+                                  //             color: ConstantColors.whiteColor,
+                                  //             fontWeight: FontWeight.bold,
+                                  //             fontSize: 18),
+                                  //       )
+                                  //     ],
+                                  //   ),
+                                  // ),
                                   Spacer(),
                                   Provider.of<Authentication>(context,
                                                   listen: false)
@@ -295,10 +324,8 @@ class FeedHelpers with ChangeNotifier {
                                           onPressed: () {
                                             Provider.of<PostFunctions>(context,
                                                     listen: false)
-                                                .showPostOptions(
-                                                    context,
-                                                    documentSnapshot[
-                                                        'caption']);
+                                                .showPostOptions(context,
+                                                    documentSnapshot.id);
                                           },
                                           icon: Icon(
                                             EvaIcons.moreVertical,

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:nsocial/common/Constantcolors.dart';
@@ -17,7 +16,7 @@ class GroupMessageHelper with ChangeNotifier {
   bool get getHasMemberJoined => hasMemberJoined;
   late String lastMessageTime;
   String get getLastMessageTime => lastMessageTime;
- 
+
   late QuerySnapshot querySnapshot;
 
   cedingAdmin(BuildContext context, String roomName) {
@@ -84,8 +83,7 @@ class GroupMessageHelper with ChangeNotifier {
                                         context,
                                         PageTransition(
                                             child: AltProfile(
-                                              userUid:
-                                                  documentSnapshot.id,
+                                              userUid: documentSnapshot.id,
                                             ),
                                             type: PageTransitionType
                                                 .bottomToTop));
@@ -123,32 +121,28 @@ class GroupMessageHelper with ChangeNotifier {
                                         FirebaseFirestore.instance
                                             .collection('chatrooms')
                                             .doc(roomName)
-                                          
                                             .update({
-                                       
-                                          
                                           'useremail':
                                               documentSnapshot['useremail'],
                                           'userimage':
                                               documentSnapshot['userimage'],
                                           'username':
                                               documentSnapshot['username'],
-                                         'useruid': documentSnapshot.id,
-                                        
+                                          'useruid': documentSnapshot.id,
                                         }).whenComplete(() {
                                           FirebaseFirestore.instance
-                                          .collection('users')
-                                          .doc(documentSnapshot.id)
-                                          .collection('chatrooms')
-                                          .doc(roomName)
-                                          .update({
+                                              .collection('users')
+                                              .doc(documentSnapshot.id)
+                                              .collection('chatrooms')
+                                              .doc(roomName)
+                                              .update({
                                             'useremail':
-                                              documentSnapshot['useremail'],
-                                          'userimage':
-                                              documentSnapshot['userimage'],
-                                          'username':
-                                              documentSnapshot['username'],
-                                         'useruid': documentSnapshot.id,
+                                                documentSnapshot['useremail'],
+                                            'userimage':
+                                                documentSnapshot['userimage'],
+                                            'username':
+                                                documentSnapshot['username'],
+                                            'useruid': documentSnapshot.id,
                                           });
                                         });
                                       },
@@ -174,113 +168,142 @@ class GroupMessageHelper with ChangeNotifier {
         });
   }
 
-  leaveTheRoomChat(BuildContext context, String chatroomName){
-    return showDialog(context: context, builder: (context){
-      return AlertDialog(
-        backgroundColor: ConstantColors.darkColor,
-        title: Text('Leave $chatroomName ?', style: TextStyle(
-          color: ConstantColors.whiteColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 14
-        ),),
-        actions: [
-          MaterialButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            child: Text('No', style: TextStyle(
-              color: ConstantColors.whiteColor,
-              fontWeight: FontWeight.bold,
-              decoration: TextDecoration.underline,
-              decorationColor: ConstantColors.whiteColor,
-              fontSize: 14
-            ),),
-          ),
-          MaterialButton(
-            color: ConstantColors.redColor,
-            onPressed: (){
-              FirebaseFirestore.instance.collection('chatrooms')
-              .doc(chatroomName)
-              .collection('members')
-              .doc(Provider.of<Authentication>(context, listen: false).getUserUid)
-              .delete().whenComplete((){
-                FirebaseFirestore.instance.collection('users')
-                .doc(Provider.of<Authentication>(context, listen: false).getUserUid)
-                .collection('chatrooms')
-                .doc(chatroomName)
-                .delete();
-              }).whenComplete((){
-                  Navigator.pushReplacement(context, PageTransition(child: HomePage()
-                  , type: PageTransitionType.bottomToTop));
-              });
-            },
-            child: Text('Yes', style: TextStyle(
-              color: ConstantColors.whiteColor,
-              fontWeight: FontWeight.bold,
-             
-              fontSize: 14
-            ),),
-          )
-        ],
-      );
-    });
+  leaveTheRoomChat(BuildContext context, String chatroomName) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: ConstantColors.darkColor,
+            title: Text(
+              'Leave $chatroomName ?',
+              style: TextStyle(
+                  color: ConstantColors.whiteColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+            actions: [
+              MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'No',
+                  style: TextStyle(
+                      color: ConstantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                      decorationColor: ConstantColors.whiteColor,
+                      fontSize: 14),
+                ),
+              ),
+              MaterialButton(
+                color: ConstantColors.redColor,
+                onPressed: () {
+                  FirebaseFirestore.instance
+                      .collection('chatrooms')
+                      .doc(chatroomName)
+                      .collection('members')
+                      .doc(Provider.of<Authentication>(context, listen: false)
+                          .getUserUid)
+                      .delete()
+                      .whenComplete(() {
+                    FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(Provider.of<Authentication>(context, listen: false)
+                            .getUserUid)
+                        .collection('chatrooms')
+                        .doc(chatroomName)
+                        .delete();
+                  }).whenComplete(() {
+                    Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: HomePage(),
+                            type: PageTransitionType.bottomToTop));
+                  });
+                },
+                child: Text(
+                  'Yes',
+                  style: TextStyle(
+                      color: ConstantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                ),
+              )
+            ],
+          );
+        });
   }
 
-  deleteTheRoomChat(BuildContext context, String chatroomName){
-    return showDialog(context: context, builder: (context){
-      return AlertDialog(
-        backgroundColor: ConstantColors.darkColor,
-        title: Text('Delete $chatroomName ?', style: TextStyle(
-          color: ConstantColors.whiteColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 14
-        ),),
-        actions: [
-          MaterialButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            child: Text('No', style: TextStyle(
-              color: ConstantColors.whiteColor,
-              fontWeight: FontWeight.bold,
-              decoration: TextDecoration.underline,
-              decorationColor: ConstantColors.whiteColor,
-              fontSize: 14
-            ),),
-          ),
-          MaterialButton(
-            color: ConstantColors.redColor,
-            onPressed: ()async{
-              await FirebaseFirestore.instance.collection('chatrooms')
-              .doc(chatroomName)
-              .delete().whenComplete(() async{
-                querySnapshot = await FirebaseFirestore.instance.collection('chatrooms')
-                  .doc(chatroomName
-                ).collection('members').get();
+  deleteTheRoomChat(BuildContext context, String chatroomName) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: ConstantColors.darkColor,
+            title: Text(
+              'Delete $chatroomName ?',
+              style: TextStyle(
+                  color: ConstantColors.whiteColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14),
+            ),
+            actions: [
+              MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'No',
+                  style: TextStyle(
+                      color: ConstantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                      decorationColor: ConstantColors.whiteColor,
+                      fontSize: 14),
+                ),
+              ),
+              MaterialButton(
+                color: ConstantColors.redColor,
+                onPressed: () async {
+                  await FirebaseFirestore.instance
+                      .collection('chatrooms')
+                      .doc(chatroomName)
+                      .delete()
+                      .whenComplete(() async {
+                    querySnapshot = await FirebaseFirestore.instance
+                        .collection('chatrooms')
+                        .doc(chatroomName)
+                        .collection('members')
+                        .get();
 
-                querySnapshot.docs.forEach((element) { 
-                  FirebaseFirestore.instance.collection('users')
-                  .doc(element.id)
-                  .collection('chatrooms')
-                  .doc(chatroomName).delete();
-                });
-                
-
-              }).whenComplete((){
-                  Navigator.pushReplacement(context, PageTransition(child: HomePage()
-                  , type: PageTransitionType.bottomToTop));
-              });
-            },
-            child: Text('Yes', style: TextStyle(
-              color: ConstantColors.whiteColor,
-              fontWeight: FontWeight.bold,
-             
-              fontSize: 14
-            ),),
-          )
-        ],
-      );
-    });
+                    querySnapshot.docs.forEach((element) {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(element.id)
+                          .collection('chatrooms')
+                          .doc(chatroomName)
+                          .delete();
+                    });
+                  }).whenComplete(() {
+                    Navigator.pushReplacement(
+                        context,
+                        PageTransition(
+                            child: HomePage(),
+                            type: PageTransitionType.bottomToTop));
+                  });
+                },
+                child: Text(
+                  'Yes',
+                  style: TextStyle(
+                      color: ConstantColors.whiteColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                ),
+              )
+            ],
+          );
+        });
   }
 
   showMessages(BuildContext context, DocumentSnapshot documentSnapshot,
@@ -302,14 +325,14 @@ class GroupMessageHelper with ChangeNotifier {
             reverse: true,
             children:
                 snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
-                  showLastMessageTime(documentSnapshot['time']);
+              showLastMessageTime(documentSnapshot['time']);
               return Padding(
                 padding: const EdgeInsets.only(top: 4.0),
                 child: Container(
                   width: MediaQuery.of(context).size.width,
-                  height: documentSnapshot['message'] != '' ?
-                  MediaQuery.of(context).size.height * 0.15 
-                  : MediaQuery.of(context).size.height * 0.25,
+                  height: documentSnapshot['message'] != ''
+                      ? MediaQuery.of(context).size.height * 0.15
+                      : MediaQuery.of(context).size.height * 0.25,
                   child: Stack(
                     children: [
                       Padding(
@@ -355,36 +378,38 @@ class GroupMessageHelper with ChangeNotifier {
                                         ],
                                       ),
                                     ),
-                                    (documentSnapshot['message'] != '') ?
-                                     Text(
-                                      documentSnapshot['message'],
-                                      style: TextStyle(
-                                          color: ConstantColors.whiteColor,
-                                          fontSize: 14),
-                                    ) :
+                                    (documentSnapshot['message'] != '')
+                                        ? Text(
+                                            documentSnapshot['message'],
+                                            style: TextStyle(
+                                                color:
+                                                    ConstantColors.whiteColor,
+                                                fontSize: 14),
+                                          )
+                                        : Container(
+                                            height: 80,
+                                            width: 80,
+                                            child: Image.network(
+                                                documentSnapshot['sticker'])),
                                     Container(
-                                      height: 80,
                                       width: 80,
-                                      child: Image.network(documentSnapshot['sticker'])
+                                      child: Text(
+                                        getLastMessageTime,
+                                        style: TextStyle(
+                                            color: ConstantColors.whiteColor
+                                                .withOpacity(0.4),
+                                            fontSize: 10),
                                       ),
-                                    Container(
-                                      width: 80,
-                                      child: Text(getLastMessageTime,
-                                      style: TextStyle(
-                                        color: ConstantColors.whiteColor.withOpacity(0.4),
-                                        fontSize: 10
-                                      ),),
-                                      
                                     ),
-                                    
                                   ],
                                 ),
                               ),
                               constraints: BoxConstraints(
-                                  maxHeight:
-                                    documentSnapshot['message'] != '' ?
-                                      MediaQuery.of(context).size.height * 0.15 
-                                      : MediaQuery.of(context).size.height * 0.3,
+                                  maxHeight: documentSnapshot['message'] != ''
+                                      ? MediaQuery.of(context).size.height *
+                                          0.15
+                                      : MediaQuery.of(context).size.height *
+                                          0.3,
                                   maxWidth:
                                       MediaQuery.of(context).size.width * 0.8),
                               decoration: BoxDecoration(
@@ -464,7 +489,6 @@ class GroupMessageHelper with ChangeNotifier {
         .doc(documentSnapshot.id)
         .collection('messages')
         .add({
-      
       'message': messageController.text,
       'time': Timestamp.now(),
       'userimage': Provider.of<FirebaseOperations>(context, listen: false)
@@ -566,89 +590,97 @@ class GroupMessageHelper with ChangeNotifier {
         });
   }
 
-  showSticker(BuildContext context, String chatroomId){
-    return showModalBottomSheet(context: context, builder: (context){
-      return AnimatedContainer(
-        duration: Duration(seconds: 1),
-        curve: Curves.easeIn,
-        height: MediaQuery.of(context).size.height*0.55,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: ConstantColors.darkColor,
-          borderRadius: BorderRadius.only(topLeft: Radius.circular(12), topRight: Radius.circular(12))
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 150),
-              child: Divider(
-                thickness: 4,
-                color: ConstantColors.whiteColor,
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height*0.1,
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      border: Border.all(color: ConstantColors.blueColor)
-                    ),
-                    height: 30,
-                    width: 30,
-                    child: Image.asset('assets/icons/sticker_19.png'),
-                  )
-                ],
-              ),
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height*0.4,
-              width: MediaQuery.of(context).size.width,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('stickers').snapshots(),
-                builder: (context, snapshot){
-                  if (snapshot.connectionState == ConnectionState.waiting){
-                    return new Center(child: CircularProgressIndicator(),);
-                  }
-                  else{
-                    return new GridView(
-                      children: snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
-                        return GestureDetector(
-                          onTap: (){
-                            sendStickers(
-                              context
-                              , documentSnapshot['image']
-                              , chatroomId);
-                          },
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            child: Image.network(documentSnapshot['image']),
-                          ),
+  showSticker(BuildContext context, String chatroomId) {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return AnimatedContainer(
+            duration: Duration(seconds: 1),
+            curve: Curves.easeIn,
+            height: MediaQuery.of(context).size.height * 0.55,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: ConstantColors.darkColor,
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    topRight: Radius.circular(12))),
+            child: Column(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: ConstantColors.whiteColor,
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.1,
+                  width: MediaQuery.of(context).size.width,
+                  child: Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(5),
+                            border:
+                                Border.all(color: ConstantColors.blueColor)),
+                        height: 30,
+                        width: 30,
+                        child: Image.asset('assets/icons/sticker_19.png'),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.4,
+                  width: MediaQuery.of(context).size.width,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('stickers')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return new Center(
+                          child: CircularProgressIndicator(),
                         );
-                      }).toList(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3
-                      ));
-                  }
-                },
-              ),
+                      } else {
+                        return new GridView(
+                            children: snapshot.data!.docs
+                                .map((DocumentSnapshot documentSnapshot) {
+                              return GestureDetector(
+                                onTap: () {
+                                  sendStickers(context,
+                                      documentSnapshot['image'], chatroomId);
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: 40,
+                                  child:
+                                      Image.network(documentSnapshot['image']),
+                                ),
+                              );
+                            }).toList(),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 3));
+                      }
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      );
-    });
+          );
+        });
   }
 
-  sendStickers(BuildContext context, String stickerImageUrl, String chatRoomId) async{
-    await FirebaseFirestore.instance.collection('chatrooms').doc(
-      chatRoomId
-    ).collection('messages')
-    .add({
-      'message' : '',
-'sticker': stickerImageUrl,
+  sendStickers(
+      BuildContext context, String stickerImageUrl, String chatRoomId) async {
+    await FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(chatRoomId)
+        .collection('messages')
+        .add({
+      'message': '',
+      'sticker': stickerImageUrl,
       'time': Timestamp.now(),
       'userimage': Provider.of<FirebaseOperations>(context, listen: false)
           .getInitUserImage,
@@ -658,7 +690,7 @@ class GroupMessageHelper with ChangeNotifier {
     });
   }
 
-  showLastMessageTime(dynamic timeData){
+  showLastMessageTime(dynamic timeData) {
     Timestamp time = timeData;
     DateTime dateTime = time.toDate();
     lastMessageTime = timeago.format(dateTime);
@@ -782,28 +814,37 @@ class GroupMessageHelper with ChangeNotifier {
                                               documentSnapshot['userimage'],
                                           'time': Timestamp.now()
                                         }).whenComplete(() {
-                                          Provider.of<FirebaseOperations>(context, listen: false)
-                                          .submitUserChatRoom(roomName,
-                                          {
-                                            'roomavatar': '',
-                            'time': Timestamp.now(),
-                            'roomname': roomName,
-                            'username': Provider.of<FirebaseOperations>(context,
-                                    listen: false)
-                                .getInitUserName,
-                            'useremail': Provider.of<FirebaseOperations>(
-                                    context,
-                                    listen: false)
-                                .getInitUserEmail,
-                            'userimage': Provider.of<FirebaseOperations>(
-                                    context,
-                                    listen: false)
-                                .getInitUserImage,
-                            'useruid': Provider.of<Authentication>(context,
-                                    listen: false)
-                                .getUserUid,
-                                          } 
-                                          ,documentSnapshot['useruid'] );
+                                          Provider.of<FirebaseOperations>(
+                                                  context,
+                                                  listen: false)
+                                              .submitUserChatRoom(
+                                                  roomName,
+                                                  {
+                                                    'roomavatar': '',
+                                                    'time': Timestamp.now(),
+                                                    'roomname': roomName,
+                                                    'username': Provider.of<
+                                                                FirebaseOperations>(
+                                                            context,
+                                                            listen: false)
+                                                        .getInitUserName,
+                                                    'useremail': Provider.of<
+                                                                FirebaseOperations>(
+                                                            context,
+                                                            listen: false)
+                                                        .getInitUserEmail,
+                                                    'userimage': Provider.of<
+                                                                FirebaseOperations>(
+                                                            context,
+                                                            listen: false)
+                                                        .getInitUserImage,
+                                                    'useruid': Provider.of<
+                                                                Authentication>(
+                                                            context,
+                                                            listen: false)
+                                                        .getUserUid,
+                                                  },
+                                                  documentSnapshot['useruid']);
                                         });
                                       },
                                       child: Text(
@@ -826,5 +867,27 @@ class GroupMessageHelper with ChangeNotifier {
             ),
           );
         });
+  }
+
+  showDialogAdminLeaveGroup(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: ConstantColors.darkColor,
+      title: Text(
+          'Admin can\'t leave the group!!!\nCeding Admin to another member before leave'),
+      actions: [
+        MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            color: ConstantColors.blueColor,
+            child: Text(
+              'Ok',
+              style: TextStyle(
+                  color: ConstantColors.whiteColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ))
+      ],
+    );
   }
 }

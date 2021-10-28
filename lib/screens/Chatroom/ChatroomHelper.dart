@@ -347,10 +347,15 @@ class ChatroomHelper with ChangeNotifier {
           );
         } else {
           return new ListView(
-            
             children:
                 snapshot.data!.docs.map((DocumentSnapshot documentSnapshot) {
-                  showLastMessageTime(documentSnapshot['time']);
+              showLastMessageTime(documentSnapshot['time']);
+              Query<Map<String, dynamic>> streamMessage = FirebaseFirestore
+                  .instance
+                  .collection('chatrooms')
+                  .doc(documentSnapshot.id)
+                  .collection('messages')
+                  .orderBy('time', descending: true);
               return ListTile(
                 onTap: () {
                   Navigator.push(
@@ -370,92 +375,98 @@ class ChatroomHelper with ChangeNotifier {
                       fontSize: 16,
                       fontWeight: FontWeight.bold),
                 ),
-                subtitle: 
-                
-                StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('chatrooms')
-                      .doc(documentSnapshot.id)
-                      .collection('messages')
-                      .orderBy('time', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData){
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      if (snapshot.data!.docs.first['username'] != null &&
-                          snapshot.data!.docs.first['message'] != '') {
-                        return Text(
-                          '${snapshot.data!.docs.first['username']} : ${snapshot.data!.docs.first['message']}',
-                          style: TextStyle(
-                              color: ConstantColors.greenColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold),
-                        );
-                      } else {
-                        if (snapshot.data!.docs.first['username'] != null &&
-                            snapshot.data!.docs.first['message'] == '') {
-                          return Text(
-                            '${snapshot.data!.docs.first['username']} : sent a sticker',
-                            style: TextStyle(
-                                color: ConstantColors.greenColor,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold),
-                          );
-                        } else {
-                          return Text('...', style: TextStyle(
-                              color: ConstantColors.greenColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold)
-                          );
-                        }
-                      }
-                    }
-                    }
-                    else{
-                      return Container(width: 0, height: 0,);
-                    }
-                  },
-                ),
+                subtitle: streamMessage != null
+                    ? StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('chatrooms')
+                            .doc(documentSnapshot.id)
+                            .collection('messages')
+                            .orderBy('time', descending: true)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          print("DDDDDDD: $snapshot");
+                          if (snapshot.data != null) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              if (snapshot.data!.docs.first['username'] !=
+                                      null &&
+                                  snapshot.data!.docs.first['message'] != '') {
+                                return Text(
+                                  '${snapshot.data!.docs.first['username']} : ${snapshot.data!.docs.first['message']}',
+                                  style: TextStyle(
+                                      color: ConstantColors.greenColor,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold),
+                                );
+                              } else {
+                                if (snapshot.data!.docs.first['username'] !=
+                                        null &&
+                                    snapshot.data!.docs.first['message'] ==
+                                        '') {
+                                  return Text(
+                                    '${snapshot.data!.docs.first['username']} : sent a sticker',
+                                    style: TextStyle(
+                                        color: ConstantColors.greenColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold),
+                                  );
+                                } else {
+                                  return Text('...',
+                                      style: TextStyle(
+                                          color: ConstantColors.greenColor,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold));
+                                }
+                              }
+                            }
+                          } else {
+                            return Text('...',
+                                style: TextStyle(
+                                    color: ConstantColors.greenColor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold));
+                          }
+                        },
+                      )
+                    : Text('...',
+                        style: TextStyle(
+                            color: ConstantColors.greenColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold)),
                 trailing: Container(
-                  width: MediaQuery.of(context).size.width*0.2,
+                  width: MediaQuery.of(context).size.width * 0.2,
                   child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance.collection('chatrooms')
-                    .doc(documentSnapshot.id)
-                    .collection('messages')
-                    .orderBy('time', descending: true)
-                    .snapshots(),
-                    builder: (context, snapshot){
+                    stream: FirebaseFirestore.instance
+                        .collection('chatrooms')
+                        .doc(documentSnapshot.id)
+                        .collection('messages')
+                        .orderBy('time', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
                       showLastMessageTime(snapshot.data!.docs.first['time']);
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                      }
-                      else {
-                        if (getLastestMessageTime != null){
-                        return Text(getLastestMessageTime, style: TextStyle(
-                          color: ConstantColors.whiteColor.withOpacity(0.4),
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold
-                        ),);
-                        }
-                        else{
-                          return Text('...', style: TextStyle(
-                              color: ConstantColors.greenColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold)
-                          );
-                        }
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else {
+                        print('Time: ' + getLastestMessageTime);
+                        return Text(
+                          getLastestMessageTime,
+                          style: TextStyle(
+                              color: ConstantColors.whiteColor.withOpacity(0.4),
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold),
+                        );
                       }
                     },
                   ),
                 ),
                 leading: CircleAvatar(
-                  backgroundColor: ConstantColors.transperant,
+                  backgroundColor: ConstantColors.blueColor,
                   backgroundImage: NetworkImage(documentSnapshot['roomavatar']),
                 ),
               );
@@ -466,11 +477,10 @@ class ChatroomHelper with ChangeNotifier {
     );
   }
 
-  showLastMessageTime(dynamic timeData){
+  showLastMessageTime(dynamic timeData) {
     Timestamp time = timeData;
     DateTime datetime = time.toDate();
     latestMessageTime = timeago.format(datetime);
     notifyListeners();
-
   }
 }

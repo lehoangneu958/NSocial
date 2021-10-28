@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:lottie/lottie.dart';
 import 'package:nsocial/common/Constantcolors.dart';
 import 'package:nsocial/screens/AltProfile/alt_profile.dart';
+import 'package:nsocial/screens/Feed/FeedHelpers.dart';
 import 'package:nsocial/screens/HomePage/HomePage.dart';
 import 'package:nsocial/services/Authentication.dart';
 import 'package:nsocial/utils/PostOptions.dart';
@@ -49,14 +50,14 @@ class Comment extends StatelessWidget {
         centerTitle: true,
         title: RichText(
             text: TextSpan(
-                text: 'N',
+                text: 'Com',
                 style: TextStyle(
                     color: ConstantColors.whiteColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
                 children: <TextSpan>[
               TextSpan(
-                  text: 'Social',
+                  text: 'ment',
                   style: TextStyle(
                       color: ConstantColors.blueColor,
                       fontWeight: FontWeight.bold,
@@ -71,6 +72,8 @@ class Comment extends StatelessWidget {
               .doc(postId)
               .snapshots(),
           builder: (context, snapshot) {
+            Provider.of<PostFunctions>(context, listen: false)
+                .showTimeAgo(snapshot.data!['time']);
             // if (snapshot.connectionState == ConnectionState.waiting) {
             //   return Center(
             //     child: SizedBox(
@@ -169,15 +172,22 @@ class Comment extends StatelessWidget {
                             ),
                           ),
                         ),
-                        Container(
-                          color: ConstantColors.transperant,
-                          height: MediaQuery.of(context).size.height * 0.3,
-                          width: MediaQuery.of(context).size.width,
-                          child: FittedBox(
-                            child: Image.network(snapshot.data!['postimage'],
-                                scale: 2),
-                          ),
-                        ),
+                        snapshot.data!['postimage'] != ''
+                            ? Container(
+                                color: ConstantColors.transperant,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.3,
+                                width: MediaQuery.of(context).size.width,
+                                child: FittedBox(
+                                  child: Image.network(
+                                      snapshot.data!['postimage'],
+                                      scale: 2),
+                                ),
+                              )
+                            : Container(
+                                width: 0,
+                                height: 0,
+                              ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -250,12 +260,12 @@ class Comment extends StatelessWidget {
                                   children: [
                                     GestureDetector(
                                       onTap: () {
-                                        Provider.of<PostFunctions>(context,
-                                                listen: false)
-                                            .showCommentsSheet(
-                                                context,
-                                                snapshot.data!,
-                                                snapshot.data!['caption']);
+                                        // Provider.of<PostFunctions>(context,
+                                        //         listen: false)
+                                        //     .showCommentsSheet(
+                                        //         context,
+                                        //         snapshot.data!,
+                                        //         snapshot.data!['caption']);
                                       },
                                       child: Icon(
                                         FontAwesomeIcons.comment,
@@ -293,29 +303,29 @@ class Comment extends StatelessWidget {
                                 ),
                               ),
                               //--------award
-                              Container(
-                                width: 80,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    GestureDetector(
-                                      child: Icon(
-                                        FontAwesomeIcons.award,
-                                        color: ConstantColors.yellowColor,
-                                        size: 22,
-                                      ),
-                                    ),
-                                    Padding(padding: EdgeInsets.only(left: 8)),
-                                    Text(
-                                      '0',
-                                      style: TextStyle(
-                                          color: ConstantColors.whiteColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18),
-                                    )
-                                  ],
-                                ),
-                              ),
+                              // Container(
+                              //   width: 80,
+                              //   child: Row(
+                              //     mainAxisAlignment: MainAxisAlignment.start,
+                              //     children: [
+                              //       GestureDetector(
+                              //         child: Icon(
+                              //           FontAwesomeIcons.award,
+                              //           color: ConstantColors.yellowColor,
+                              //           size: 22,
+                              //         ),
+                              //       ),
+                              //       Padding(padding: EdgeInsets.only(left: 8)),
+                              //       Text(
+                              //         '0',
+                              //         style: TextStyle(
+                              //             color: ConstantColors.whiteColor,
+                              //             fontWeight: FontWeight.bold,
+                              //             fontSize: 18),
+                              //       )
+                              //     ],
+                              //   ),
+                              // ),
                               Spacer(),
                               Provider.of<Authentication>(context,
                                               listen: false)

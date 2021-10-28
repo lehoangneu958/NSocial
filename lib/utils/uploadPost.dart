@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nsocial/common/Constantcolors.dart';
+import 'package:nsocial/screens/HomePage/HomePage.dart';
 import 'package:nsocial/services/Authentication.dart';
 import 'package:nsocial/services/FirebaseOperations.dart';
 import 'package:provider/provider.dart';
@@ -15,12 +16,12 @@ class UploadPost with ChangeNotifier {
   TextEditingController captionController = TextEditingController();
   late File uploadPostImage;
   File get getUploadPostImage => uploadPostImage;
-  late String uploadPostImageUrl;
+  String uploadPostImageUrl = '';
   String get getUploadPostImageUrl => uploadPostImageUrl;
   final picker = ImagePicker();
 
   late UploadTask imagePostUploadTask;
-
+  int count = 0;
   Future pickUploadPostImage(BuildContext context, ImageSource source) async {
     final uploadPostImageVal = await picker.getImage(source: source);
     uploadPostImageVal == null
@@ -179,7 +180,7 @@ class UploadPost with ChangeNotifier {
         });
   }
 
-  editPostSheet(BuildContext context) {
+  editPostSheetWithoutImage(BuildContext context) {
     return showModalBottomSheet(
         isScrollControlled: true,
         context: context,
@@ -196,31 +197,49 @@ class UploadPost with ChangeNotifier {
                 ),
                 Container(
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        child: Column(
-                          children: [
-                            IconButton(
-                                onPressed: () {},
+                      // Container(
+                      //   child: Column(
+                      //     children: [
+                      //       IconButton(
+                      //           onPressed: () {},
+                      //           icon: Icon(
+                      //             Icons.image_aspect_ratio,
+                      //             color: ConstantColors.greenColor,
+                      //           )),
+                      //       IconButton(
+                      //           onPressed: () {},
+                      //           icon: Icon(
+                      //             Icons.fit_screen,
+                      //             color: ConstantColors.yellowColor,
+                      //           ))
+                      //     ],
+                      //   ),
+                      // ),
+                      Center(
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.15,
+                          width: MediaQuery.of(context).size.width,
+                          child: Container(
+                            // height: 10,
+                            // width: 10,
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: ConstantColors.whiteColor),
+                            child: Center(
+                              child: IconButton(
                                 icon: Icon(
-                                  Icons.image_aspect_ratio,
-                                  color: ConstantColors.greenColor,
-                                )),
-                            IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.fit_screen,
-                                  color: ConstantColors.yellowColor,
-                                ))
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 200,
-                        width: 300,
-                        child: Image.file(
-                          uploadPostImage,
-                          fit: BoxFit.contain,
+                                  FontAwesomeIcons.plus,
+                                  size: 20,
+                                  color: ConstantColors.greyColor,
+                                ),
+                                onPressed: () {
+                                  selectPostImageType(context);
+                                },
+                              ),
+                            ),
+                          ),
                         ),
                       )
                     ],
@@ -232,7 +251,7 @@ class UploadPost with ChangeNotifier {
                     children: [
                       SizedBox(
                         height: 30,
-                        width: 30,
+                        width: MediaQuery.of(context).size.width * 0.05,
                         child: Image.asset('assets/icons/sunflower.png'),
                       ),
                       Container(
@@ -244,7 +263,7 @@ class UploadPost with ChangeNotifier {
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Container(
                           height: 120,
-                          width: 330,
+                          width: MediaQuery.of(context).size.width * 0.9,
                           child: TextField(
                             maxLines: 5,
                             textCapitalization: TextCapitalization.words,
@@ -275,8 +294,8 @@ class UploadPost with ChangeNotifier {
                   child: Text('Share'),
                   onPressed: () async {
                     Provider.of<FirebaseOperations>(context, listen: false)
-                        .uploadPostData(captionController.text, {
-                      'postimage' : getUploadPostImageUrl,
+                        .uploadPostData({
+                      'postimage': '',
                       'caption': captionController.text,
                       'username': Provider.of<FirebaseOperations>(context,
                               listen: false)
@@ -291,10 +310,146 @@ class UploadPost with ChangeNotifier {
                       'useremail': Provider.of<FirebaseOperations>(context,
                               listen: false)
                           .getInitUserEmail,
-                        })
-                    .whenComplete(() => {
-                      Navigator.pop(context)
-                    });
+                    }).whenComplete(() => {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()),
+                                  (route) => false)
+                            });
+                  },
+                  color: ConstantColors.blueColor,
+                )
+              ],
+            ),
+            height: MediaQuery.of(context).size.height * 0.9,
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                color: ConstantColors.blueGreyColor,
+                borderRadius: BorderRadius.circular(12)),
+          );
+        });
+  }
+
+  editPostSheet(BuildContext context) {
+    return showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return Container(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 150),
+                  child: Divider(
+                    thickness: 4,
+                    color: ConstantColors.whiteColor,
+                  ),
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Container(
+                      //   child: Column(
+                      //     children: [
+                      //       IconButton(
+                      //           onPressed: () {},
+                      //           icon: Icon(
+                      //             Icons.image_aspect_ratio,
+                      //             color: ConstantColors.greenColor,
+                      //           )),
+                      //       IconButton(
+                      //           onPressed: () {},
+                      //           icon: Icon(
+                      //             Icons.fit_screen,
+                      //             color: ConstantColors.yellowColor,
+                      //           ))
+                      //     ],
+                      //   ),
+                      // ),
+                      Container(
+                          height: 200,
+                          width: 300,
+                          child: Image.file(
+                            uploadPostImage,
+                            fit: BoxFit.contain,
+                          ))
+                    ],
+                  ),
+                ),
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        height: 30,
+                        width: MediaQuery.of(context).size.width * 0.05,
+                        child: Image.asset('assets/icons/sunflower.png'),
+                      ),
+                      Container(
+                        height: 110,
+                        width: 5,
+                        color: ConstantColors.blueColor,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Container(
+                          height: 120,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          child: TextField(
+                            maxLines: 5,
+                            textCapitalization: TextCapitalization.words,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(100)
+                            ],
+                            maxLength: 100,
+                            maxLengthEnforced: true,
+                            controller: captionController,
+                            style: TextStyle(
+                                color: ConstantColors.whiteColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold),
+                            decoration: InputDecoration(
+                              hintText: 'Add ad Caption...',
+                              hintStyle: TextStyle(
+                                  color: ConstantColors.whiteColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                MaterialButton(
+                  child: Text('Share'),
+                  onPressed: () async {
+                    Provider.of<FirebaseOperations>(context, listen: false)
+                        .uploadPostData({
+                      'postimage': getUploadPostImageUrl,
+                      'caption': captionController.text,
+                      'username': Provider.of<FirebaseOperations>(context,
+                              listen: false)
+                          .getInitUserName,
+                      'userimage': Provider.of<FirebaseOperations>(context,
+                              listen: false)
+                          .getInitUserImage,
+                      'useruid':
+                          Provider.of<Authentication>(context, listen: false)
+                              .getUserUid,
+                      'time': Timestamp.now(),
+                      'useremail': Provider.of<FirebaseOperations>(context,
+                              listen: false)
+                          .getInitUserEmail,
+                    }).whenComplete(() => {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => HomePage()),
+                                  (route) => false)
+                            });
                   },
                   color: ConstantColors.blueColor,
                 )

@@ -52,8 +52,8 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
-  Future uploadPostData(String postId, dynamic data) async {
-    return FirebaseFirestore.instance.collection('posts').doc(postId).set(data);
+  Future uploadPostData(dynamic data) async {
+    return FirebaseFirestore.instance.collection('posts').add(data);
   }
 
   Future deleteUserData(String userUid, dynamic collection) async {
@@ -100,15 +100,20 @@ class FirebaseOperations with ChangeNotifier {
     });
   }
 
-  Future submitChatroomData(String chatroomName, dynamic data) async{
-    return FirebaseFirestore.instance.collection('chatrooms').doc(chatroomName).set(data);
-
+  Future submitChatroomData(String chatroomName, dynamic data) async {
+    return FirebaseFirestore.instance
+        .collection('chatrooms')
+        .doc(chatroomName)
+        .set(data);
   }
 
-  Future submitUserChatRoom(String chatroomName, dynamic data, String useruid) async{
-    return FirebaseFirestore.instance.collection('users').doc(useruid).collection('chatrooms')
-    .doc(chatroomName).set(data);
-
+  Future submitUserChatRoom(
+      String chatroomName, dynamic data, String useruid) async {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(useruid)
+        .collection('chatrooms')
+        .doc(chatroomName)
+        .set(data);
   }
-
 }

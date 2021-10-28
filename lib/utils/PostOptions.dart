@@ -15,18 +15,28 @@ class PostFunctions with ChangeNotifier {
   late String imageTimePosted;
   String get getimageTimeposted => imageTimePosted;
 
-  bool checkLike(BuildContext context, String postId) {
-    dynamic data = FirebaseFirestore.instance
+  Future<bool> checkLike(BuildContext context, String postId) async {
+    bool check = false;
+    QuerySnapshot data = await FirebaseFirestore.instance
         .collection('posts')
         .doc(postId)
         .collection('likes')
-        .snapshots();
+        .get();
+    List<dynamic> readlData = [];
+    data.docs.forEach((element) {
+      readlData.add(element);
+      // ignore: unnecessary_statements
+    });
+    readlData.forEach((element) {
+      if (element.id ==
+          Provider.of<Authentication>(context, listen: false).getUserUid) {
+        print("CHeckTrue");
+        check = true;
+      }
+    });
+    print('');
 
-    if (data['useruid'] ==
-        Provider.of<Authentication>(context, listen: false).getUserUid) {
-      return true;
-    }
-    return false;
+    return check;
   }
 
   showTimeAgo(dynamic timedata) {
@@ -177,7 +187,7 @@ class PostFunctions with ChangeNotifier {
                           },
                           color: ConstantColors.blueColor,
                           child: Text(
-                            'Delete Caption',
+                            'Delete Post',
                             style: TextStyle(
                                 color: ConstantColors.whiteColor,
                                 fontWeight: FontWeight.bold,

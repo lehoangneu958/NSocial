@@ -19,7 +19,7 @@ class Feed extends StatelessWidget {
           IconButton(
               onPressed: () {
                 Provider.of<UploadPost>(context, listen: false)
-                    .selectPostImageType(context);
+                    .editPostSheetWithoutImage(context);
               },
               icon: Icon(
                 Icons.camera_enhance_rounded,
